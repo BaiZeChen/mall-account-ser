@@ -10,7 +10,7 @@ var Conf = new(Config)
 // App 服务基础信息
 type App struct {
 	Name string `mapstructure:"name"`
-	Port int    `mapstructure:"port"`
+	Port string `mapstructure:"port"`
 }
 type MySQLConfig struct {
 	DSN          string `mapstructure:"dsn"`
@@ -23,12 +23,12 @@ type Config struct {
 }
 
 func init() {
-	viper.SetConfigFile("./dev.conf.yaml")
+	viper.SetConfigFile("./account/configs/dev.conf.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(fmt.Sprintf("读取配置文件失败，原因：%s\n", err.Error()))
+		panic(any(fmt.Sprintf("读取配置文件失败，原因：%s\n", err.Error())))
 	}
 	if err := viper.Unmarshal(Conf); err != nil {
-		panic(fmt.Sprintf("解析配置文件失败，原因：%s\n", err.Error()))
+		panic(any(fmt.Sprintf("解析配置文件失败，原因：%s\n", err.Error())))
 	}
 }

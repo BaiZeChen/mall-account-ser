@@ -12,6 +12,10 @@ type Account struct {
 	Password string `gorm:"column:password"`
 }
 
+func (a *Account) TableName() string {
+	return "account"
+}
+
 func (a *Account) CreateAccount() error {
 	res := pkg.GlobalGorm.Create(a)
 	if res.Error != nil {
@@ -20,11 +24,18 @@ func (a *Account) CreateAccount() error {
 	return nil
 }
 
-func (a *Account) UpdateAccountName(id uint, name string) error {
-	a.ID = id
-	res := pkg.GlobalGorm.Model(a).Update("name", name)
-	if res.Error != nil {
-		return errors.New(fmt.Sprintf("修改账户名称失败，原因：%s", res.Error.Error()))
+func (a *Account) UpdateAccount() error {
+	if len(a.Name) > 0 {
+		res := pkg.GlobalGorm.Model(a).Update("name", a.Name)
+		if res.Error != nil {
+			return errors.New(fmt.Sprintf("修改账户名称失败，原因：%s", res.Error.Error()))
+		}
+	}
+	if len(a.Password) > 0 {
+		res := pkg.GlobalGorm.Model(a).Update("password", a.Password)
+		if res.Error != nil {
+			return errors.New(fmt.Sprintf("修改账户名称失败，原因：%s", res.Error.Error()))
+		}
 	}
 	return nil
 }

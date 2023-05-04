@@ -1,6 +1,6 @@
 app:
   name: "mall-account-ser"   #应用名称
-  port: 6280         # 服务器端口号
+  port: "6280"         # 服务器端口号
 mysql:
   dsn: "root:yAyi&8no@tcp(39.96.82.208:3306)/go_admin?charset=utf8mb4&parseTime=True&loc=Local"
   maxIdleConns: 10
