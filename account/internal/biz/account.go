@@ -31,10 +31,6 @@ func (a *AccountControl) Add() error {
 }
 
 func (a *AccountControl) UpdateName() error {
-	if len(a.Name) == 0 || len(a.Name) > 12 {
-		return errors.New("账号长度不符合规则，请重新输入！")
-	}
-
 	model := data.Account{
 		Base: data.Base{ID: a.ID},
 		Name: a.Name,
@@ -79,11 +75,15 @@ func (a *AccountControl) Delete() error {
 	return nil
 }
 
-func (a *AccountControl) List(offset, limit int) ([]data.Account, error) {
+func (a *AccountControl) List(offset, limit int) ([]data.Account, int64, error) {
 	model := data.Account{}
 	list, err := model.AccountList(a.Name, offset, limit)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return list, nil
+	count, err := model.AccountCount(a.Name)
+	if err != nil {
+		return nil, 0, err
+	}
+	return list, count, nil
 }

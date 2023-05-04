@@ -30,11 +30,17 @@ func (a *Account) UpdateAccount() error {
 		if res.Error != nil {
 			return errors.New(fmt.Sprintf("修改账户名称失败，原因：%s", res.Error.Error()))
 		}
+		if res.RowsAffected == 0 {
+			return errors.New("没有找到对应的用户")
+		}
 	}
 	if len(a.Password) > 0 {
 		res := pkg.GlobalGorm.Model(a).Update("password", a.Password)
 		if res.Error != nil {
 			return errors.New(fmt.Sprintf("修改账户名称失败，原因：%s", res.Error.Error()))
+		}
+		if res.RowsAffected == 0 {
+			return errors.New("没有找到对应的用户")
 		}
 	}
 	return nil
@@ -53,7 +59,7 @@ func (a *Account) AccountList(name string, offset, limit int) ([]Account, error)
 	res := pkg.GlobalGorm.
 		Select("id", "name", "create_time", "update_time").
 		Where("name LIKE ?", "%"+name+"%").Order("id desc").Offset(offset).
-		Limit(limit).Find(list)
+		Limit(limit).Find(&list)
 	if res.Error != nil {
 		return nil, errors.New(fmt.Sprintf("查询账户列表失败，原因：%s", res.Error.Error()))
 	}
@@ -62,7 +68,7 @@ func (a *Account) AccountList(name string, offset, limit int) ([]Account, error)
 
 func (a *Account) AccountCount(name string) (int64, error) {
 	var length int64
-	res := pkg.GlobalGorm.Where("name LIKE ?", "%"+name+"%").Count(&length)
+	res := pkg.GlobalGorm.Model(a).Where("name LIKE ?", "%"+name+"%").Count(&length)
 	if res.Error != nil {
 		return 0, errors.New(fmt.Sprintf("统计账户列表失败，原因：%s", res.Error.Error()))
 	}
