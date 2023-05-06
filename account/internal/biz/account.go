@@ -4,6 +4,7 @@ import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"mall-account-ser/account/internal/data"
+	"mall-account-ser/account/internal/pkg"
 )
 
 type AccountControl struct {
@@ -47,11 +48,11 @@ func (a *AccountControl) UpdatePassword() error {
 		return errors.New("请填写密码！")
 	}
 
-	ecode, err := bcrypt.GenerateFromPassword([]byte(a.Password), bcrypt.DefaultCost)
+	encode, err := bcrypt.GenerateFromPassword([]byte(a.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return errors.New("密码加密失败！")
 	}
-	a.Password = string(ecode)
+	a.Password = string(encode)
 
 	model := data.Account{
 		Base:     data.Base{ID: a.ID},
@@ -86,4 +87,35 @@ func (a *AccountControl) List(offset, limit int) ([]data.Account, int64, error) 
 		return nil, 0, err
 	}
 	return list, count, nil
+}
+
+func (a *AccountControl) checkAccount() (data.Account, error) {
+	model := &data.Account{
+		Name: a.Name,
+	}
+	account, err := model.FindAccountByName()
+	if err != nil {
+		return account, err
+	}
+	err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(a.Password))
+	if err != nil {
+		return account, errors.New("账号校验失败")
+	}
+	return account, nil
+}
+
+func (a *AccountControl) Login() (string, error) {
+	account, err := a.checkAccount()
+	if err != nil {
+		return "", err
+	}
+	jwt := &pkg.JWTClaims{
+		AccountId:   uint32(account.ID),
+		AccountName: account.Name,
+	}
+	token, err := jwt.Generate()
+	if err != nil {
+		return "", err
+	}
+	return token, nil
 }

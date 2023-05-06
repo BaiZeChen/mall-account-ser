@@ -3,6 +3,7 @@ package data
 import (
 	"errors"
 	"fmt"
+	"gorm.io/gorm"
 	"mall-account-ser/account/pkg"
 )
 
@@ -73,4 +74,19 @@ func (a *Account) AccountCount(name string) (int64, error) {
 		return 0, errors.New(fmt.Sprintf("统计账户列表失败，原因：%s", res.Error.Error()))
 	}
 	return length, nil
+}
+
+func (a *Account) FindAccountByName() (Account, error) {
+	var account Account
+	res := pkg.GlobalGorm.
+		Where("name = ?", a.Name).
+		First(&account)
+	if res.Error != nil {
+		if errors.Is(res.Error, gorm.ErrRecordNotFound) {
+			// 没有找到账号
+			return account, errors.New("没有找到对应的账号信息")
+		}
+		return account, res.Error
+	}
+	return account, nil
 }

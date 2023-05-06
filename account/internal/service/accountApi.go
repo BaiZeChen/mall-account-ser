@@ -11,6 +11,24 @@ import (
 
 type AccountApi struct{}
 
+func (a *AccountApi) Login(ctx context.Context, req *account.ReqAddAccount) (*account.RespToken, error) {
+	control := &biz.AccountControl{
+		Name:     req.Name,
+		Password: req.Password,
+	}
+	if len(control.Name) == 0 || len(control.Name) > 12 {
+		return nil, status.Errorf(codes.InvalidArgument, "账号长度不符合规则，请重新输入！")
+	}
+	if len(control.Password) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "请填写密码！")
+	}
+
+	token, err := control.Login()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "登录失败，原因：%s", err.Error())
+	}
+	return &account.RespToken{Token: token}, nil
+}
 func (a *AccountApi) CreateAccount(ctx context.Context, req *account.ReqAddAccount) (*emptypb.Empty, error) {
 	control := &biz.AccountControl{
 		Name:     req.Name,
