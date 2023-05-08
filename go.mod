@@ -1,4 +1,4 @@
-module mall-account-ser
+module mall-ser
 
 go 1.20
 

@@ -3,8 +3,8 @@ package biz
 import (
 	"errors"
 	"golang.org/x/crypto/bcrypt"
-	"mall-account-ser/account/internal/data"
-	"mall-account-ser/account/internal/pkg"
+	"mall-ser/account/internal/data"
+	"mall-ser/account/internal/pkg"
 )
 
 type AccountControl struct {

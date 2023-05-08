@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"mall-account-ser/account/configs"
+	"mall-ser/account/configs"
 	"time"
 )
 

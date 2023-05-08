@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/BaiZeChen/mall-api/proto/account"
 	"google.golang.org/grpc"
-	"mall-account-ser/account/configs"
-	"mall-account-ser/account/internal/interceptor"
-	"mall-account-ser/account/internal/service"
-	"mall-account-ser/account/pkg"
+	"mall-ser/account/configs"
+	"mall-ser/account/internal/interceptor"
+	"mall-ser/account/internal/service"
+	"mall-ser/account/pkg"
 	"net"
 )
 

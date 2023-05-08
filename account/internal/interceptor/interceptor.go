@@ -6,8 +6,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"mall-account-ser/account/internal/pkg"
-	pkg2 "mall-account-ser/account/pkg"
+	"mall-ser/account/internal/pkg"
+	globalPkg "mall-ser/account/pkg"
 	"runtime/debug"
 	"strings"
 )
@@ -50,7 +50,7 @@ func Auth(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, hand
 }
 
 func Limit(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
-	if !pkg2.GlobalLimiter.Allow() {
+	if !globalPkg.GlobalLimiter.Allow() {
 		return nil, status.Errorf(codes.Unavailable, "访问频繁，请稍后再试~~")
 	}
 	return handler(ctx, req)

@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"gorm.io/gorm"
-	"mall-account-ser/account/pkg"
+	"mall-ser/account/pkg"
 )
 
 type Account struct {
