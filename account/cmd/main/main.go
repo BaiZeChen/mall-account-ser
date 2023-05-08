@@ -12,12 +12,14 @@ import (
 
 func init() {
 	pkg.InitGorm(configs.Conf.MySQL)
+	pkg.FlowControl()
 }
 
 func main() {
 	opst := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
 			interceptor.RecoveryInterceptor,
+			interceptor.Limit,
 			interceptor.Auth,
 		),
 	}

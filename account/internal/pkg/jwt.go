@@ -43,12 +43,8 @@ func (j *JWTClaims) Check(token string) (bool, error) {
 		return false, err
 	}
 
-	if claims, ok := res.Claims.(*JWTClaims); ok && res.Valid {
-		now := time.Now().Unix()
-		if now >= claims.ExpiresAt {
-			return false, nil
-		}
-	} else {
+	if !res.Valid {
+		// 校验不通过
 		return false, nil
 	}
 	return true, nil
