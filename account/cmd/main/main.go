@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/BaiZeChen/mall-api/proto/account"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
 	"google.golang.org/grpc"
 	"mall-ser/account/configs"
 	"mall-ser/account/internal/interceptor"
@@ -13,12 +15,14 @@ import (
 func init() {
 	pkg.InitGorm(configs.Conf.MySQL)
 	pkg.FlowControl()
+	pkg.InitTracing()
 }
 
 func main() {
 	opst := []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
 			interceptor.RecoveryInterceptor,
+			otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer(), otgrpc.LogPayloads()),
 			interceptor.Limit,
 			interceptor.Auth,
 		),
@@ -30,6 +34,10 @@ func main() {
 		panic(err)
 	}
 	err = server.Serve(listen)
+	if err != nil {
+		panic(err)
+	}
+	err = pkg.TracingCloser.Close()
 	if err != nil {
 		panic(err)
 	}

@@ -2,7 +2,10 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"github.com/BaiZeChen/mall-api/proto/account"
+	"github.com/opentracing/opentracing-go"
+	"github.com/opentracing/opentracing-go/ext"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -12,6 +15,11 @@ import (
 type AccountApi struct{}
 
 func (a *AccountApi) Login(ctx context.Context, req *account.ReqAddAccount) (*account.RespToken, error) {
+	parentSpan := opentracing.SpanFromContext(ctx)
+	fmt.Println(parentSpan)
+	span := opentracing.GlobalTracer().StartSpan("login-ser", opentracing.ChildOf(parentSpan.Context()))
+	defer span.Finish()
+	ext.SpanKindRPCServer.Set(span)
 	control := &biz.AccountControl{
 		Name:     req.Name,
 		Password: req.Password,
@@ -23,6 +31,8 @@ func (a *AccountApi) Login(ctx context.Context, req *account.ReqAddAccount) (*ac
 		return nil, status.Errorf(codes.InvalidArgument, "请填写密码！")
 	}
 
+	ext.DBInstance.Set(span, "go_admin")
+	ext.DBUser.Set(span, "user")
 	token, err := control.Login()
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "登录失败，原因：%s", err.Error())
