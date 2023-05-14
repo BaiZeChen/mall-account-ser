@@ -10,6 +10,7 @@ import (
 	globalPkg "mall-ser/account/pkg"
 	"runtime/debug"
 	"strings"
+	"time"
 )
 
 // 权限白名单
@@ -19,11 +20,14 @@ var whiteList = map[string]struct{}{
 
 // RecoveryInterceptor panic捕获
 func RecoveryInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
+	// 设置一下deadline
+	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer func() {
 		if e := recover(); e != nil {
 			debug.PrintStack()
 			err = status.Errorf(codes.Internal, "Panic err: %v", e)
 		}
+		cancel()
 	}()
 	return handler(ctx, req)
 }

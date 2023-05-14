@@ -26,9 +26,9 @@ func init() {
 	viper.SetConfigFile("./account/configs/dev.conf.yaml")
 	err := viper.ReadInConfig()
 	if err != nil {
-		panic(any(fmt.Sprintf("读取配置文件失败，原因：%s\n", err.Error())))
+		panic(fmt.Sprintf("读取配置文件失败，原因：%s\n", err.Error()))
 	}
 	if err := viper.Unmarshal(Conf); err != nil {
-		panic(any(fmt.Sprintf("解析配置文件失败，原因：%s\n", err.Error())))
+		panic(fmt.Sprintf("解析配置文件失败，原因：%s\n", err.Error()))
 	}
 }
